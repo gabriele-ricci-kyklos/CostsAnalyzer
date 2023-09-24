@@ -2,6 +2,8 @@
 
 namespace CostsAnalyzer.Core.Parsers
 {
+    public enum RawMovementSign { Income, Outcome }
+
     public class RawMovementRow
     {
         public DateTime Date { get; set; }
@@ -9,5 +11,6 @@ namespace CostsAnalyzer.Core.Parsers
         public string Description { get; set; }
         public decimal Amount { get; set; }
         public string Currency { get; set; }
+        public RawMovementSign Sign { get; set; }
     }
 }

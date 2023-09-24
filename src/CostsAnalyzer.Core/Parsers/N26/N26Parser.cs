@@ -13,13 +13,17 @@ namespace CostsAnalyzer.Core.Parsers.N26
             List<RawMovementRow> rows = new();
             foreach (N26FileRow row in fileRows)
             {
+                decimal amount = row.CurrencyAmount == default ? row.EuroAmount : row.CurrencyAmount;
+                RawMovementSign sign = amount < 0 ? RawMovementSign.Outcome : RawMovementSign.Income;
+
                 RawMovementRow mov =
                     new()
                     {
                         Date = row.Date,
                         Recipient = row.Recipient,
                         Description = row.Description,
-                        Amount = row.CurrencyAmount == default ? row.EuroAmount : row.CurrencyAmount,
+                        Amount = Math.Abs(amount),
+                        Sign = sign,
                         Currency = string.IsNullOrWhiteSpace(row.Currency) ? "EUR" : row.Currency,
                     };
 

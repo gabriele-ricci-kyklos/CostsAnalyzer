@@ -62,7 +62,7 @@ namespace CostsAnalyzer.Core.Parsers.Hype
         {
             string strDate = line[..10];
             string strSecondDate = line.Contains("---") ? " --- " : line.Substring(11, 10);
-            (string amountString, decimal amount) = ExtractAmount(line);
+            (string amountString, RawMovementSign sign, decimal amount) = ExtractAmount(line);
 
             line =
                 line
@@ -83,13 +83,14 @@ namespace CostsAnalyzer.Core.Parsers.Hype
                     Amount = amount,
                     Currency = "EUR",
                     Recipient = recipient,
-                    Description = description
+                    Description = description,
+                    Sign = sign,
                 };
 
             return item;
         }
 
-        private static (string AmountString, decimal Amount) ExtractAmount(string line)
+        private static (string AmountString, RawMovementSign Sign, decimal Amount) ExtractAmount(string line)
         {
             string strRawAmount = string.Empty;
 
@@ -105,6 +106,11 @@ namespace CostsAnalyzer.Core.Parsers.Hype
 
             strRawAmount = ReverseString(strRawAmount);
 
+            RawMovementSign sign =
+                strRawAmount.Contains('+')
+                    ? RawMovementSign.Income
+                    : RawMovementSign.Outcome;
+
             string strAmount =
                 strRawAmount
                     .Replace(" ", string.Empty)
@@ -113,7 +119,7 @@ namespace CostsAnalyzer.Core.Parsers.Hype
                     .Replace("€", string.Empty)
                     .Replace(',', '.');
 
-            return (strRawAmount, Convert.ToDecimal(strAmount));
+            return (strRawAmount, sign, Convert.ToDecimal(strAmount));
         }
 
         private static string ReverseString(string s)

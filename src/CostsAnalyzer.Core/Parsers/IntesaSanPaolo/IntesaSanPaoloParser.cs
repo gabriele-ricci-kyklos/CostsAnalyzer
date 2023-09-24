@@ -52,7 +52,8 @@ namespace CostsAnalyzer.Core.Parsers.IntesaSanPaolo
                             break;
                         case 8:
                             decimal value = Convert.ToDecimal(cellValue);
-                            item.Amount = value;
+                            RawMovementSign sign = value < 0 ? RawMovementSign.Outcome : RawMovementSign.Income;
+                            item.Amount = Math.Abs(value);
                             break;
                         default:
                             //error
