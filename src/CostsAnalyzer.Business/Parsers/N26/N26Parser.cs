@@ -25,6 +25,7 @@ namespace CostsAnalyzer.Business.Parsers.N26
                         Amount = Math.Abs(amount),
                         Sign = sign,
                         Currency = string.IsNullOrWhiteSpace(row.Currency) ? "EUR" : row.Currency,
+                        ParserType = ParserType.N26
                     };
 
                 rows.Add(mov);

@@ -85,6 +85,7 @@ namespace CostsAnalyzer.Business.Parsers.Hype
                     Recipient = recipient,
                     Description = description,
                     Sign = sign,
+                    ParserType = ParserType.Hype
                 };
 
             return item;

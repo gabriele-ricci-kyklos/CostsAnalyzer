@@ -24,7 +24,7 @@ namespace CostsAnalyzer.Business.Parsers.IntesaSanPaolo
 
             do
             {
-                RawMovement item = new();
+                RawMovement item = new() { ParserType = ParserType.IntesaSanPaolo };
 
                 for (col = 1; col < colCount; ++col)
                 {

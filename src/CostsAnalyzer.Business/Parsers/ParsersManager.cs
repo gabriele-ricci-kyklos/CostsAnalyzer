@@ -1,6 +1,4 @@
-﻿using CostsAnalyzer.Business.Categories;
-
-namespace CostsAnalyzer.Business.Parsers
+﻿namespace CostsAnalyzer.Business.Parsers
 {
     public class ParsersManager
     {
@@ -11,25 +9,42 @@ namespace CostsAnalyzer.Business.Parsers
             _sourceParsers = sourceParsers;
         }
 
-        public async Task<RawMovement[]> ParseAsync(string[] filePaths, ParserType parserType)
+        public async Task<RawMovement[]> ParseAsync(string[] filePaths)
         {
-            ISourceParser parser =
-                _sourceParsers.FirstOrDefault(x => x.ParserType == parserType)
-                ?? throw new NotSupportedException($"No parsers configured for the type {parserType}");
+            var groups =
+                filePaths
+                    .Select(x => (FilePath: x, ParserType: GetParserType(x)))
+                    .GroupBy(x => x.ParserType, x => x.FilePath);
 
             List<RawMovement> rawMovements = new();
 
-            foreach (string filePath in filePaths)
+            foreach (var group in groups)
             {
-                RawMovement[] movements =
-                    await parser
-                        .ParseFileAsync(filePath)
-                        .ConfigureAwait(false);
+                ISourceParser parser =
+                    _sourceParsers.FirstOrDefault(x => x.ParserType == group.Key)
+                    ?? throw new NotSupportedException($"No parsers configured for the type {group.Key}");
 
-                rawMovements.AddRange(movements);
+                foreach(string filePath in group)
+                {
+                    RawMovement[] movements =
+                        await parser
+                            .ParseFileAsync(filePath)
+                            .ConfigureAwait(false);
+
+                    rawMovements.AddRange(movements);
+                }
             }
 
             return rawMovements.ToArray();
         }
+
+        private static ParserType GetParserType(string filePath) =>
+            Path.GetExtension(filePath) switch
+            {
+                "xlsx" => ParserType.IntesaSanPaolo,
+                "pdf" => ParserType.Hype,
+                "csv" => ParserType .N26,
+                _ => throw new NotSupportedException($"Unable to infer the parser type for the file {filePath}")
+            };
     }
 }
