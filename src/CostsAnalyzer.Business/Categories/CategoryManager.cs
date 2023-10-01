@@ -4,14 +4,20 @@ using System.Text.RegularExpressions;
 namespace CostsAnalyzer.Business.Categories
 {
     public record CategoryMatch(Category PredictedCategory, int Score);
+    public record CategoryManagerOptions(int MatchingPerc)
+    {
+        public CategoryManagerOptions() : this(100) { }
+    }
 
     public partial class CategoryManager
     {
         private readonly EncryptedDao _dao;
+        private readonly CategoryManagerOptions _options;
 
-        public CategoryManager(EncryptedDao dao)
+        public CategoryManager(EncryptedDao dao, CategoryManagerOptions options)
         {
             _dao = dao;
+            _options = options;
         }
 
         public async Task<CategoryMatch[]> MatchCategoryAsync(string recipient)
@@ -47,10 +53,20 @@ namespace CostsAnalyzer.Business.Categories
             CategoryMatch[] matches =
                 scoresDict
                     .Select(x => new CategoryMatch(x.Key, x.Value))
-                    .OrderBy(x => x.Score)
+                    .Where(x =>
+                    {
+                        float perc = x.Score / (float)recipientWords.Length;
+                        if (perc >= _options.MatchingPerc)
+                        {
+                            return true;
+                        }
+
+                        return false;
+                    })
+                    .OrderByDescending(x => x.Score)
                     .ToArray();
 
-            if(!matches.Any())
+            if (!matches.Any())
             {
                 matches = new[] { new CategoryMatch(Category.Sconosciuta, 99) };
             }
