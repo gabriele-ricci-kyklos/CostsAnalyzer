@@ -6,7 +6,7 @@ namespace CostsAnalyzer.Business.Parsers.IntesaSanPaolo
     {
         public ParserType ParserType => ParserType.IntesaSanPaolo;
 
-        public ValueTask<RawMovementRow[]> ParseFileAsync(string filePath)
+        public ValueTask<RawMovement[]> ParseFileAsync(string filePath)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
@@ -20,11 +20,11 @@ namespace CostsAnalyzer.Business.Parsers.IntesaSanPaolo
             int row = 20;
             int col = 1;
             int colCount = 8;
-            List<RawMovementRow> results = new();
+            List<RawMovement> results = new();
 
             do
             {
-                RawMovementRow item = new();
+                RawMovement item = new();
 
                 for (col = 1; col < colCount; ++col)
                 {

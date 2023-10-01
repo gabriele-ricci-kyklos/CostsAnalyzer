@@ -5,18 +5,18 @@ namespace CostsAnalyzer.Business.Parsers.N26
     public class N26Parser : ISourceParser
     {
         public ParserType ParserType => ParserType.N26;
-        public ValueTask<RawMovementRow[]> ParseFileAsync(string filePath)
+        public ValueTask<RawMovement[]> ParseFileAsync(string filePath)
         {
             FileHelperEngine<N26FileRow> engine = new();
             N26FileRow[] fileRows = engine.ReadFile(filePath);
 
-            List<RawMovementRow> rows = new();
+            List<RawMovement> rows = new();
             foreach (N26FileRow row in fileRows)
             {
                 decimal amount = row.CurrencyAmount == default ? row.EuroAmount : row.CurrencyAmount;
                 RawMovementSign sign = amount < 0 ? RawMovementSign.Outcome : RawMovementSign.Income;
 
-                RawMovementRow mov =
+                RawMovement mov =
                     new()
                     {
                         Date = row.Date,

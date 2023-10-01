@@ -9,9 +9,9 @@ namespace CostsAnalyzer.Business.Parsers.Hype
     {
         public ParserType ParserType => ParserType.Hype;
 
-        public ValueTask<RawMovementRow[]> ParseFileAsync(string filePath)
+        public ValueTask<RawMovement[]> ParseFileAsync(string filePath)
         {
-            List<RawMovementRow> results = new();
+            List<RawMovement> results = new();
             using PdfReader reader = new(filePath);
             using PdfDocument doc = new(reader);
             for (int i = 1; i <= doc.GetNumberOfPages(); ++i)
@@ -32,7 +32,7 @@ namespace CostsAnalyzer.Business.Parsers.Hype
 
                     if (startsWithDate && endsWithEuroSign)
                     {
-                        RawMovementRow row = ParseMovementRow(line);
+                        RawMovement row = ParseMovementRow(line);
                         results.Add(row);
                     }
                     else
@@ -45,7 +45,7 @@ namespace CostsAnalyzer.Business.Parsers.Hype
                         if (buffer.Any() && endsWithEuroSign)
                         {
                             string fullLine = string.Join(" ", buffer);
-                            RawMovementRow row = ParseMovementRow(fullLine);
+                            RawMovement row = ParseMovementRow(fullLine);
                             results.Add(row);
                             buffer.Clear();
                         }
@@ -58,7 +58,7 @@ namespace CostsAnalyzer.Business.Parsers.Hype
             return ValueTask.FromResult(results.ToArray());
         }
 
-        private static RawMovementRow ParseMovementRow(string line)
+        private static RawMovement ParseMovementRow(string line)
         {
             string strDate = line[..10];
             string strSecondDate = line.Contains("---") ? " --- " : line.Substring(11, 10);
@@ -76,7 +76,7 @@ namespace CostsAnalyzer.Business.Parsers.Hype
 
             (string recipient, string description) = ExtractRecipientAndDescription(line);
 
-            RawMovementRow item =
+            RawMovement item =
                 new()
                 {
                     Date = DateTime.ParseExact(strDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None),

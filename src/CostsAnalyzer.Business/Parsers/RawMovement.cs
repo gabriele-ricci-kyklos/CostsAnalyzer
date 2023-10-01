@@ -4,7 +4,7 @@ namespace CostsAnalyzer.Business.Parsers
 {
     public enum RawMovementSign { Income, Outcome }
 
-    public class RawMovementRow
+    public class RawMovement
     {
         public DateTime Date { get; set; }
         public string Recipient { get; set; }

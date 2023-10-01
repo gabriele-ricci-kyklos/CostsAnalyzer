@@ -4,6 +4,6 @@
     public interface ISourceParser
     {
         ParserType ParserType { get; }
-        ValueTask<RawMovementRow[]> ParseFileAsync(string filePath);
+        ValueTask<RawMovement[]> ParseFileAsync(string filePath);
     }
 }
