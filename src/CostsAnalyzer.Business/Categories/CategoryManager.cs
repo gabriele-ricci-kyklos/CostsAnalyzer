@@ -20,58 +20,68 @@ namespace CostsAnalyzer.Business.Categories
             _options = options;
         }
 
-        public async Task<CategoryMatch[]> MatchCategoryAsync(string recipient)
+        public async Task<CategoryMatch[]> MatchCategoryAsync(string recipient) =>
+            (await MatchCategoryAsync(new[] { recipient }).ConfigureAwait(false)).FirstOrDefault().Value;
+
+        public async Task<Dictionary<string, CategoryMatch[]>> MatchCategoryAsync(string[] recipientList)
         {
             (Category Category, HashSet<string> Words)[] categoryTable =
                 await GetCategoryTableAsync().ConfigureAwait(false);
 
             HashSet<string> stopWordsSet = await GetStopWordsSetAsync().ConfigureAwait(false);
 
-            string[] recipientWords = GetSanitizedWords(recipient, stopWordsSet);
+            Dictionary<string, CategoryMatch[]> results = new();
 
-            Dictionary<Category, int> scoresDict = new();
-            foreach (string word in recipientWords)
+            foreach (string recipient in recipientList)
             {
-                foreach ((Category category, HashSet<string> words) in categoryTable)
+                string[] recipientWords = GetSanitizedWords(recipient, stopWordsSet);
+
+                Dictionary<Category, int> scoresDict = new();
+                foreach (string word in recipientWords)
                 {
-                    if (!words.Contains(word))
+                    foreach ((Category category, HashSet<string> words) in categoryTable)
                     {
-                        continue;
-                    }
-
-                    if (scoresDict.ContainsKey(category))
-                    {
-                        scoresDict[category]++;
-                    }
-                    else
-                    {
-                        scoresDict.Add(category, 1);
-                    }
-                }
-            }
-
-            CategoryMatch[] matches =
-                scoresDict
-                    .Select(x => new CategoryMatch(x.Key, x.Value))
-                    .Where(x =>
-                    {
-                        float perc = x.Score / (float)recipientWords.Length;
-                        if (perc >= _options.MatchingPerc)
+                        if (!words.Contains(word))
                         {
-                            return true;
+                            continue;
                         }
 
-                        return false;
-                    })
-                    .OrderByDescending(x => x.Score)
-                    .ToArray();
+                        if (scoresDict.ContainsKey(category))
+                        {
+                            scoresDict[category]++;
+                        }
+                        else
+                        {
+                            scoresDict.Add(category, 1);
+                        }
+                    }
+                }
 
-            if (!matches.Any())
-            {
-                matches = new[] { new CategoryMatch(Category.Sconosciuta, 99) };
+                CategoryMatch[] matches =
+                    scoresDict
+                        .Select(x => new CategoryMatch(x.Key, x.Value))
+                        .Where(x =>
+                        {
+                            float perc = x.Score / (float)recipientWords.Length;
+                            if (perc >= _options.MatchingPerc)
+                            {
+                                return true;
+                            }
+
+                            return false;
+                        })
+                        .OrderByDescending(x => x.Score)
+                        .ToArray();
+
+                if (!matches.Any())
+                {
+                    matches = new[] { new CategoryMatch(Category.Sconosciuta, 99) };
+                }
+
+                results.Add(recipient, matches);
             }
 
-            return matches;
+            return results;
         }
 
         private async Task<HashSet<string>> GetStopWordsSetAsync()
