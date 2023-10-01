@@ -1,0 +1,41 @@
+﻿namespace CostsAnalyzer.Business.Categories
+{
+    public enum Category
+    {
+        AbbigliamentoAccessori,
+        AddebitiVari,
+        AltreUscite,
+        Associazioni,
+        BonificiRicevuti,
+        BonificiUscita,
+        Carburanti,
+        Cellulare,
+        CorsiSport,
+        CuraPersona,
+        DivertimentiLocali,
+        DomiciliazioniUtenze,
+        ElettrodomesticiArredamentoGiardino,
+        EntrateVarie,
+        Farmacia,
+        GasEnergia,
+        GeneriAlimentariSupermercato,
+        HiTechInformatica,
+        ImposteBolliCommissioni,
+        LibriFilmMusica,
+        ManutenzioneVeicoli,
+        PedaggiTelepass,
+        Prelievi,
+        ProdottiVistaUdito,
+        Regali,
+        RimborsiSpeseStorni,
+        RistorantiBar,
+        SpeseMediche,
+        StipendiPensioni,
+        TabaccaiSimili,
+        TempoLibero,
+        TrasportiNoleggiTaxiParcheggi,
+        TVInternetTelefono,
+        ViaggiVacanze,
+        Sconosciuta
+    }
+}
