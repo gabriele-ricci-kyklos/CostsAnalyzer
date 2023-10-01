@@ -11,6 +11,7 @@ namespace CostsAnalyzer.Business.Parsers
         public string Description { get; set; }
         public decimal Amount { get; set; }
         public string Currency { get; set; }
+        public string Category { get; set; }
         public RawMovementSign Sign { get; set; }
     }
 }

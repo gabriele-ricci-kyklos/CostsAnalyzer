@@ -46,6 +46,7 @@ namespace CostsAnalyzer.Business.Parsers.IntesaSanPaolo
                         case 5:
                             break;
                         case 6:
+                            item.Category = cellValue.ToString();
                             break;
                         case 7:
                             item.Currency = cellValue.ToString();
