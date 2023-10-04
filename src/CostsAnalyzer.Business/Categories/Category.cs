@@ -19,6 +19,7 @@
         Farmacia,
         GasEnergia,
         GeneriAlimentariSupermercato,
+        Giroconto,
         HiTechInformatica,
         ImposteBolliCommissioni,
         LibriFilmMusica,

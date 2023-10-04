@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace CostsAnalyzer.Business.Categories
 {
-    public record CategoryMatch(Category PredictedCategory, int Score);
+    public record CategoryMatch(Category Category, int Score);
     public record CategoryManagerOptions(int MatchingPerc)
     {
         public CategoryManagerOptions() : this(100) { }
@@ -63,7 +63,7 @@ namespace CostsAnalyzer.Business.Categories
                         .Where(x =>
                         {
                             float perc = x.Score / (float)recipientWords.Length;
-                            if (perc >= _options.MatchingPerc)
+                            if (perc * 100 >= _options.MatchingPerc)
                             {
                                 return true;
                             }

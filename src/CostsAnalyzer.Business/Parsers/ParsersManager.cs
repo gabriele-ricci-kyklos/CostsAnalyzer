@@ -39,7 +39,7 @@
         }
 
         private static ParserType GetParserType(string filePath) =>
-            Path.GetExtension(filePath) switch
+            Path.GetExtension(filePath).Remove(0, 1) switch
             {
                 "xlsx" => ParserType.IntesaSanPaolo,
                 "pdf" => ParserType.Hype,
