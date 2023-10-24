@@ -4,6 +4,8 @@
     public interface ISourceParser
     {
         ParserType ParserType { get; }
+        string[] SupportedFileExtensions { get; }
+        ValueTask<bool> IsFileOfParserType(string filePath);
         ValueTask<RawMovement[]> ParseFileAsync(string filePath);
     }
 }

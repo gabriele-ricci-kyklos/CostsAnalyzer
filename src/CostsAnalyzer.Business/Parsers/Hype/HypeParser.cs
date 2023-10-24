@@ -8,6 +8,10 @@ namespace CostsAnalyzer.Business.Parsers.Hype
     public class HypeParser : ISourceParser
     {
         public ParserType ParserType => ParserType.Hype;
+        public string[] SupportedFileExtensions => new[] { "pdf" };
+
+        public ValueTask<bool> IsFileOfParserType(string filePath) =>
+            new(Path.GetExtension(filePath).Remove(0, 1) == "pdf");
 
         public ValueTask<RawMovement[]> ParseFileAsync(string filePath)
         {

@@ -6,5 +6,6 @@ namespace CostsAnalyzer.Business.Parsers.Isybank
     {
         public override ParserType ParserType => ParserType.Isybank;
         protected override int StartingRow => 19;
+        protected override string RGBHeaderCellColor => "FF0373C9";
     }
 }

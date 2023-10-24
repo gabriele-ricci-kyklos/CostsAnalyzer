@@ -4,13 +4,37 @@ namespace CostsAnalyzer.Business.Parsers.IntesaSanPaolo
 {
     public abstract class AbstractISPParser : ISourceParser
     {
+        public string[] SupportedFileExtensions => new[] { "xlsx" };
+
         public abstract ParserType ParserType { get; }
         protected abstract int StartingRow { get; }
+        protected abstract string RGBHeaderCellColor { get; }
+
+        protected AbstractISPParser()
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        }
+
+        public ValueTask<bool> IsFileOfParserType(string filePath)
+        {
+            if (Path.GetExtension(filePath).Remove(0, 1) != "xlsx")
+            {
+                return new(false);
+            }
+
+            using ExcelPackage excelPackage = new(filePath);
+            if (excelPackage.Workbook.Worksheets.Count < 1)
+            {
+                throw new NotSupportedException("No excel sheets have been found");
+            }
+
+            using ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.First();
+            string rgb = worksheet.Cells[1, 1].Style.Fill.BackgroundColor.Rgb;
+            return new(rgb == RGBHeaderCellColor);
+        }
 
         public ValueTask<RawMovement[]> ParseFileAsync(string filePath)
         {
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
             using ExcelPackage excelPackage = new(filePath);
             if (excelPackage.Workbook.Worksheets.Count < 1)
             {
@@ -25,9 +49,9 @@ namespace CostsAnalyzer.Business.Parsers.IntesaSanPaolo
 
             do
             {
-                RawMovement item = new() { ParserType = ParserType.IntesaSanPaolo };
+                RawMovement item = new() { ParserType = ParserType };
 
-                for (col = 1; col < colCount; ++col)
+                for (col = 1; col <= colCount; ++col)
                 {
                     object cellValue = worksheet.Cells[row, col].Value;
 
@@ -56,6 +80,7 @@ namespace CostsAnalyzer.Business.Parsers.IntesaSanPaolo
                             decimal value = Convert.ToDecimal(cellValue);
                             RawMovementSign sign = value < 0 ? RawMovementSign.Outcome : RawMovementSign.Income;
                             item.Amount = Math.Abs(value);
+                            item.Sign = sign;
                             break;
                         default:
                             throw new NotSupportedException($"Unknown column with index {col}");
@@ -64,7 +89,7 @@ namespace CostsAnalyzer.Business.Parsers.IntesaSanPaolo
 
                 results.Add(item);
             }
-            while (!string.IsNullOrWhiteSpace(worksheet.Cells[++row, col].Value?.ToString()));
+            while (!string.IsNullOrWhiteSpace(worksheet.Cells[++row, col - 1].Value?.ToString()));
 
             return ValueTask.FromResult(results.ToArray());
         }

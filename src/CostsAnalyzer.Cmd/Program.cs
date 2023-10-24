@@ -15,7 +15,7 @@ ISourceParser ispParser = new IntesaSanPaoloParser();
 ISourceParser hypeParser = new HypeParser();
 ISourceParser revolutParser = new RevolutParser();
 ISourceParser isybankParser = new IsybankParser();
-ParsersManager parsersManager = new(new[] { n26Parser, ispParser, hypeParser, revolutParser });
+ParsersManager parsersManager = new(new[] { n26Parser, ispParser, hypeParser, revolutParser, isybankParser });
 MovementsManager movementsManager = new(dao, parsersManager, categoryManager, new(new[] { "hype", "n26", "intesa", "revolut", "isybank", "arrotondamento" }));
 
 var result = await movementsManager.ImportMovementsAsync(Directory.GetFiles(@"C:\Temp\CostsAnalyzer\movements_data"));

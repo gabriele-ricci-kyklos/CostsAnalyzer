@@ -1,10 +1,42 @@
 ﻿using FileHelpers;
+using System;
+using System.Text;
 
 namespace CostsAnalyzer.Business.Parsers.N26
 {
     public class N26Parser : ISourceParser
     {
         public ParserType ParserType => ParserType.N26;
+        public string[] SupportedFileExtensions => new[] { "csv" };
+
+        public ValueTask<bool> IsFileOfParserType(string filePath)
+        {
+            if (Path.GetExtension(filePath).Remove(0, 1) != "csv")
+            {
+                return new(false);
+            }
+
+            byte[] buffer = new byte[512];
+            using FileStream fs = new(filePath, FileMode.Open, FileAccess.Read);
+            int bytes_read = fs.Read(buffer, 0, buffer.Length);
+            fs.Close();
+
+            if (bytes_read != buffer.Length)
+            {
+                throw new FileLoadException($"Unable to read first {buffer.Length} bytes of the file", filePath);
+            }
+
+            try
+            {
+                string s = Encoding.UTF8.GetString(buffer);
+                return new(s.StartsWith("\"Data\""));
+            }
+            catch (Exception)
+            {
+                return new(false);
+            }
+        }
+
         public ValueTask<RawMovement[]> ParseFileAsync(string filePath)
         {
             FileHelperEngine<N26FileRow> engine = new();
