@@ -1,6 +1,6 @@
 ﻿namespace CostsAnalyzer.Business.Parsers
 {
-    public enum ParserType { N26, IntesaSanPaolo, Hype }
+    public enum ParserType { N26, IntesaSanPaolo, Hype, Revolut }
     public interface ISourceParser
     {
         ParserType ParserType { get; }

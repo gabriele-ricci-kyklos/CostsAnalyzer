@@ -4,6 +4,7 @@ using CostsAnalyzer.Business.Parsers;
 using CostsAnalyzer.Business.Parsers.Hype;
 using CostsAnalyzer.Business.Parsers.IntesaSanPaolo;
 using CostsAnalyzer.Business.Parsers.N26;
+using CostsAnalyzer.Business.Parsers.Revolut;
 using CostsAnalyzer.Data;
 
 EncryptedDao dao = new(new(@"C:\Temp\CostsAnalyzer\data"));
@@ -11,8 +12,9 @@ CategoryManager categoryManager = new(dao, new(30));
 ISourceParser n26Parser = new N26Parser();
 ISourceParser ispParser = new IntesaSanPaoloParser();
 ISourceParser hypeParser = new HypeFileParser();
-ParsersManager parsersManager = new(new[] { n26Parser, ispParser, hypeParser });
-MovementsManager movementsManager = new(dao, parsersManager, categoryManager, new(new[] { "hype", "n26", "intesa", "arrotondamento" }));
+ISourceParser revolutParser = new RevolutParser();
+ParsersManager parsersManager = new(new[] { n26Parser, ispParser, hypeParser, revolutParser });
+MovementsManager movementsManager = new(dao, parsersManager, categoryManager, new(new[] { "hype", "n26", "intesa", "revolut", "arrotondamento" }));
 
 var result = await movementsManager.ImportMovementsAsync(Directory.GetFiles(@"C:\Temp\CostsAnalyzer\movements_data"));
 
