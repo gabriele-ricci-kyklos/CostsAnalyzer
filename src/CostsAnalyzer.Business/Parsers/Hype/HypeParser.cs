@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace CostsAnalyzer.Business.Parsers.Hype
 {
-    public class HypeFileParser : ISourceParser
+    public class HypeParser : ISourceParser
     {
         public ParserType ParserType => ParserType.Hype;
 
